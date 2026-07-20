@@ -28,7 +28,7 @@ const AgentAutocomplete = ({ value, onChange, disabled }: Props) => {
     useEffect(() => {
         if (!open) return;
         fetchAgents(1, debouncedSearch, true);
-    }, [debouncedSearch, open]);
+    }, [debouncedSearch]);
 
     const fetchAgents = async (pageToFetch: number, search: string, replace: boolean) => {
         setLoading(true);
@@ -95,7 +95,7 @@ const AgentAutocomplete = ({ value, onChange, disabled }: Props) => {
                             ...params.slotProps?.input,
                             endAdornment: (
                                 <>
-                                    {loading && <CircularProgress size={18} />}
+                                    {loading && <CircularProgress size={20} />}
                                     {params.slotProps?.input?.endAdornment}
                                 </>
                             ),

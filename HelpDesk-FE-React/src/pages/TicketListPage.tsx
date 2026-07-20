@@ -12,11 +12,19 @@ import { logout } from "../app/slices/auth-slice";
 import { useConfirm } from "../app/hooks/confirm-hook";
 import { TicketStatus } from "../types/ticket-status";
 import dayjs from "dayjs";
+import { useDebouncedValue } from "../app/hooks/debounced-hook";
+import TicketListToolbar from "../components/ticket-list/TicketListToolbar";
+import TicketFilterPanel from "../components/ticket-list/TicketFilterPanel";
+import type { AgentOption } from "../interfaces/user";
 
 function TicketListPage() {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [sortModel, setSortModel] = useState<GridSortModel>([]);
-    const [filter] = useState<TicketFilter>();
+    const [filter, setFilter] = useState<TicketFilter>();
+    const [selectedAgent, setSelectedAgent] = useState<AgentOption | null>(null);
+    const [searchInput, setSearchInput] = useState('');
+    const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+    const debouncedSearch = useDebouncedValue(searchInput, 400);
 
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.auth);
@@ -36,7 +44,11 @@ function TicketListPage() {
         } catch (err) {
             toast.error(err);
         }
-    }, [paginationModel, sortModel]);
+    }, [filter, paginationModel, sortModel]);
+
+    useEffect(() => {
+        setFilter((prev) => ({ ...prev, search: debouncedSearch || undefined, page: 1 }));
+    }, [debouncedSearch]);
 
     const ticketListColumns: GridColDef[] = getColumnsBasedOnRole();
 
@@ -180,6 +192,20 @@ function TicketListPage() {
         }
     }
 
+    const activeFilterCount = countActiveFilters(filter);
+
+    function countActiveFilters(filter: TicketFilter): number {
+        let count = 0;
+        if (filter?.status) count++;
+        if (filter?.priority) count++;
+        if (filter?.groupId) count++;
+        if (filter?.categoryId) count++;
+        if (filter?.assignedTo) count++;
+        if (filter?.breached) count++;
+        if (filter?.dateFrom || filter?.dateTo) count++;
+        return count;
+    }
+
     return (
         <>
             <Box sx={{ maxWidth: '100%', mt: 2 }}>
@@ -190,6 +216,13 @@ function TicketListPage() {
                         <Button variant='contained' size='small' onClick={() => navigate('/ticket/create')} sx={{ my: 2, mx: 1 }}>Create Ticket</Button>
                     </Box>
                 </Stack>
+
+                <TicketListToolbar
+                    searchValue={searchInput}
+                    onSearchChange={setSearchInput}
+                    activeFilterCount={activeFilterCount}
+                    onOpenFilterPanel={() => setFilterPanelOpen(true)}
+                />
 
                 <DataGrid
                     pagination
@@ -211,6 +244,18 @@ function TicketListPage() {
                     onSortModelChange={setSortModel}
                     checkboxSelection
                     disableRowSelectionOnClick
+                />
+
+                <TicketFilterPanel
+                    open={filterPanelOpen}
+                    role={user.role as UserRole}
+                    currentFilter={filter}
+                    currentAgent={selectedAgent}
+                    onClose={() => setFilterPanelOpen(false)}
+                    onApply={(applied, agent) => {
+                        setFilter({ ...applied, search: filter.search });
+                        setSelectedAgent(agent ?? null);
+                    }}
                 />
             </Box>
 

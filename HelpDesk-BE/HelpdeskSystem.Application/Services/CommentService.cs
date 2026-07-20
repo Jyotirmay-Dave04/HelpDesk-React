@@ -92,7 +92,7 @@ public class CommentService : ICommentService
 
         IEnumerable<Comment> comments = await _uow.Comments.FindAsync(
             filter: c => c.TicketId == ticketId && !c.IsDeleted && (_currentUser.GetUserRole() != nameof(UserRole.Requester) || !c.IsInternal), 
-            orderBy: q => q.OrderByDescending(c => c.CreatedAt),
+            orderBy: q => q.OrderBy(c => c.CreatedAt),
             includes: q => q.Include(c => c.Author)
         );
         

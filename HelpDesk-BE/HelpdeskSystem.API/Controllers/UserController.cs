@@ -46,5 +46,12 @@ namespace HelpdeskSystem.API.Controllers
             ApiResponse<PagedResponse<UserResponseDto>> result = await _userService.GetAgentsByWorkloadAsync(dto);
             return result.Success ? Ok(result) : BadRequest(result);
         }
+
+        [HttpPost("getAgents")]
+        public async Task<IActionResult> GetAgentsWithPost([FromBody] AssignAgentRequestDto dto)
+        {
+            ApiResponse<PagedResponse<UserResponseDto>> result = await _userService.GetAgentsByWorkloadAsync(dto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
     }
 }

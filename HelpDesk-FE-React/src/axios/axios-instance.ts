@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "../utils/Toast";
+import { decryptPayload, encryptPayload } from "../utils/CryptoUtils";
 
 const axiosInstance = axios.create({
     baseURL: "http://localhost:5089/api",
@@ -9,10 +10,14 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(
-    (config) => {
+    async (config) => {
         const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+        }
+        if (config.data && ['post', 'put', 'patch'].includes(config.method ?? '')) {
+            const encrypted = await encryptPayload(config.data);
+            config.data = encrypted;
         }
         return config;
     },
@@ -20,10 +25,27 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {        
+    async (response) => {
+        if (response.data) {
+            response.data = await decryptPayload(response.data);
+        }
+        return response;
+    },
+    async (error) => {
+        if (!error.response) {
+            // network error, CORS block, server unreachable
+            toast.error("Cannot reach server. Please check your connection.");
+            return Promise.reject({ message: "Network error" });
+        }
+
+        if (error.response?.data) {
+            try {
+                error.response.data = await decryptPayload(error.response.data);
+            } catch {}
+        }
+        
         const isLoginRequest = error.config?.url?.includes('/Auth/login');
-        if(error.response.status === 401 && !isLoginRequest){
+        if (error.response.status === 401 && !isLoginRequest) {
             toast.error("Session expired. Please log in again.");
             localStorage.removeItem('token');
             window.location.href = "/login";

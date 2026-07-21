@@ -36,7 +36,7 @@ export default function LoginForm() {
                 toast.success(data.message);
                 navigate(from, { replace: true });
             } catch (err) {
-                toast.error(error);
+                toast.error(err);
             } finally {
                 setSubmitting(false);
             }

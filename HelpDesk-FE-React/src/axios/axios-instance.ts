@@ -3,7 +3,7 @@ import { toast } from "../utils/Toast";
 import { decryptPayload, encryptPayload } from "../utils/CryptoUtils";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:5089/api",
+    baseURL: "https://localhost:7150/api",
     headers: {
         "Content-Type": "application/json",
     },

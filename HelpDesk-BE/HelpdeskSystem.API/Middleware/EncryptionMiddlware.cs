@@ -15,7 +15,8 @@ public class EncryptionMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Skip encryption for non-API routes (swagger, health checks, etc.) if needed
-        if (!context.Request.Path.StartsWithSegments("/api"))
+        if (!context.Request.Path.StartsWithSegments("/api")
+            || context.Request.Path.StartsWithSegments("/api/Config/encryptionKey"))
         {
             await _next(context);
             return;

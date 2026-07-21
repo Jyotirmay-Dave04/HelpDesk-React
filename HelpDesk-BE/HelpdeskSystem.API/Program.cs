@@ -151,7 +151,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddCors(options =>
     {
         options.AddPolicy("FrontendPolicy", policy => policy
-            .WithOrigins("http://localhost:4200", "http://localhost:5173")
+            .WithOrigins("http://localhost:4200", "http://localhost:5173", "https://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
@@ -163,7 +163,7 @@ builder.Services.AddCors(options =>
             .AllowCredentials()
         );
         options.AddPolicy("AllowReact", policy => policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins("http://localhost:5173", "https://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()

@@ -209,7 +209,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("FrontendPolicy");
-app.UseMiddleware<EncryptionMiddleware>();
+
+var useEncryption = builder.Configuration.GetValue<bool>("Encryption:UseEncryption");
+if (useEncryption)
+{
+    app.UseMiddleware<EncryptionMiddleware>();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<NotificationHub>("/hubs/notifications");

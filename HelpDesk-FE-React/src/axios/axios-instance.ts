@@ -2,8 +2,10 @@ import axios from "axios";
 import { toast } from "../utils/Toast";
 import { decryptPayload, encryptPayload } from "../utils/CryptoUtils";
 
+const useEncryption = import.meta.env.VITE_USE_ENCRYPTION == true;
+
 const axiosInstance = axios.create({
-    baseURL: "https://localhost:7150/api",
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         "Content-Type": "application/json",
     },
@@ -15,7 +17,7 @@ axiosInstance.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        if (config.data && ['post', 'put', 'patch'].includes(config.method ?? '')) {
+        if (useEncryption && config.data && ['post', 'put', 'patch'].includes(config.method ?? '')) {
             const encrypted = await encryptPayload(config.data);
             config.data = encrypted;
         }
@@ -26,7 +28,7 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
     async (response) => {
-        if (response.data) {
+        if (useEncryption && response.data) {
             response.data = await decryptPayload(response.data);
         }
         return response;
@@ -38,7 +40,7 @@ axiosInstance.interceptors.response.use(
             return Promise.reject({ message: "Network error" });
         }
 
-        if (error.response?.data) {
+        if (useEncryption && error.response?.data) {
             try {
                 error.response.data = await decryptPayload(error.response.data);
             } catch {}

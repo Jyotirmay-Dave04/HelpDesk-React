@@ -26,6 +26,13 @@ namespace HelpdeskSystem.API.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [HttpPost("getAll")]
+        public async Task<IActionResult> GetAllWithPost([FromBody] UserFilterRequest filter)
+        {
+            ApiResponse<PagedResponse<UserResponseDto>> result = await _userService.GetAllUsersAsync(filter);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         [HttpPut("updateUserRole/{id:int}")]
         public async Task<IActionResult> UpdateUserRole(int id, ChangeUserRolePayload payload)
         {      

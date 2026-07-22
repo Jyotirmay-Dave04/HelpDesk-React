@@ -5,15 +5,22 @@ public class EncryptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly byte[] _key;
+    private readonly bool _useEncryption;
 
     public EncryptionMiddleware(RequestDelegate next, IConfiguration config)
     {
         _next = next;
         _key = Convert.FromBase64String(config["Encryption:Key"]!); // 32 bytes -> AES-256
+        _useEncryption = config.GetValue<bool>("Encryption:UseEncryption");
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (!_useEncryption){
+            await _next(context);
+            return;
+        }
+
         // Skip encryption for non-API routes (swagger, health checks, etc.) if needed
         if (!context.Request.Path.StartsWithSegments("/api")
             || context.Request.Path.StartsWithSegments("/api/Config/encryptionKey"))

@@ -9,6 +9,7 @@ import LoggedRoute from "./routes/LoggedRoute";
 import CreateTicketPage from "./pages/TicketCreatePage";
 import TicketListPage from "./pages/TicketListPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
+import UserManagementPage from "./pages/UserManagementPage";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         </Route>
 
         <Route element={<RoleProtectedRoute allowedRoles={[UserRole.Admin]}><Outlet /></RoleProtectedRoute>}>
+          <Route path='/admin/userManagement' element={<UserManagementPage />} />
         </Route>
       </Routes>
     </>

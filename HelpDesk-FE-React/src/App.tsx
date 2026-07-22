@@ -10,6 +10,7 @@ import CreateTicketPage from "./pages/TicketCreatePage";
 import TicketListPage from "./pages/TicketListPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
 import UserManagementPage from "./pages/UserManagementPage";
+import AppLayout from "./layouts/AppLayout";
 
 function App() {
   return (
@@ -21,16 +22,21 @@ function App() {
           <LoggedRoute><LoginForm /></LoggedRoute>
         }></Route>
 
-        <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
-          <Route path='/dashboard' element={<TicketListPage />} />
-          <Route path='/ticket/create' element={<CreateTicketPage />} />
-          <Route path='/ticket/edit/:id' element={<CreateTicketPage />} />
-          <Route path='/ticket/:ticketId' element={<TicketDetailsPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path='/dashboard' element={<TicketListPage />} />
+            <Route path='/myTickets' element={<TicketListPage />} />
+            <Route path='/allTickets' element={<TicketListPage />} />
+            <Route path='/ticket/create' element={<CreateTicketPage />} />
+            <Route path='/ticket/edit/:id' element={<CreateTicketPage />} />
+            <Route path='/ticket/:ticketId' element={<TicketDetailsPage />} />
+
+            <Route element={<RoleProtectedRoute allowedRoles={[UserRole.Admin]}><Outlet /></RoleProtectedRoute>}>
+              <Route path='/userManagement' element={<UserManagementPage />} />
+            </Route>
+          </Route>
         </Route>
 
-        <Route element={<RoleProtectedRoute allowedRoles={[UserRole.Admin]}><Outlet /></RoleProtectedRoute>}>
-          <Route path='/admin/userManagement' element={<UserManagementPage />} />
-        </Route>
       </Routes>
     </>
   );

@@ -3,7 +3,7 @@ import type { TicketFilter } from "../../interfaces/ticket";
 import { UserRole } from "../../types/user-role";
 import * as Yup from 'yup';
 import type { AgentOption } from "../../interfaces/user";
-import { Box, Button, Divider, Drawer, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Divider, Drawer, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Toolbar, Typography } from "@mui/material";
 import { Priority } from "../../types/priority";
 import { TicketStatus } from "../../types/ticket-status";
 import AgentAutocomplete from "../ticket-details/AgentAutoComplete";
@@ -102,6 +102,7 @@ const TicketFilterPanel = ({ open, role, currentFilter, currentAgent, onClose, o
 
     return (
         <Drawer anchor="right" open={open} onClose={onClose}>
+            <Toolbar />
             <Box sx={{ width: 340, p: 3 }}>
                 <Stack direction="row" sx={{ mb: 2, justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="h6">Filters</Typography>

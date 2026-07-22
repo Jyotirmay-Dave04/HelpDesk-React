@@ -8,7 +8,6 @@ import { Delete, Edit, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import { deleteTicket, fetchTickets } from "../app/thunks/ticket-thunk";
-import { logout } from "../app/slices/auth-slice";
 import { useConfirm } from "../app/hooks/confirm-hook";
 import { TicketStatus } from "../types/ticket-status";
 import dayjs from "dayjs";
@@ -208,11 +207,10 @@ function TicketListPage() {
 
     return (
         <>
-            <Box sx={{ maxWidth: '100%', mt: 2 }}>
+            <Box sx={{ maxWidth: '100%'}}>
                 <Stack direction='row' sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="h5" sx={{ my: 2 }}>Tickets</Typography>
                     <Box>
-                        <Button variant='contained' size='small' onClick={() => dispatch(logout())} sx={{ my: 2, mx: 1 }} >Logout</Button>
                         <Button variant='contained' size='small' onClick={() => navigate('/ticket/create')} sx={{ my: 2, mx: 1 }}>Create Ticket</Button>
                     </Box>
                 </Stack>

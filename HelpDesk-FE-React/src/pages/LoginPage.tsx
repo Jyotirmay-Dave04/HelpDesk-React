@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert, Box, Button, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
@@ -21,8 +21,6 @@ export default function LoginForm() {
     const { error } = useAppSelector(state => state.auth);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || '/dashboard';
 
     const formik = useFormik({
         initialValues: {
@@ -34,7 +32,7 @@ export default function LoginForm() {
             try {
                 const data = await dispatch(login(values)).unwrap();
                 toast.success(data.message);
-                navigate(from, { replace: true });
+                navigate('/dashboard');
             } catch (err) {
                 toast.error(err);
             } finally {

@@ -11,6 +11,8 @@ import TicketListPage from "./pages/TicketListPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import AppLayout from "./layouts/AppLayout";
+import GroupManagementPage from "./pages/GroupManagementPage";
+import SlaSettingsPage from "./pages/SlaSettingsPage";
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
 
             <Route element={<RoleProtectedRoute allowedRoles={[UserRole.Admin]}><Outlet /></RoleProtectedRoute>}>
               <Route path='/userManagement' element={<UserManagementPage />} />
+              <Route path='/groupManagement' element={<GroupManagementPage />} />
+              <Route path='/slaSettings' element={<SlaSettingsPage />} />
             </Route>
           </Route>
         </Route>

@@ -1,3 +1,5 @@
+import type { Priority } from "../types/priority";
+
 export const ApiEndpoints = {
     AUTH: {
       LOGIN: '/Auth/login',
@@ -74,7 +76,7 @@ export const ApiEndpoints = {
     },
     SLAPOLICY: {
       BASE: '/SlaPolicy',
-      UPDATE: (priority: string) => `/SlaPolicy/${priority}`
+      UPDATE: (priority: Priority) => `/SlaPolicy/${priority}`
     },
     CANNED_RESPONSES: {
       BASE:   '/CannedResponse',

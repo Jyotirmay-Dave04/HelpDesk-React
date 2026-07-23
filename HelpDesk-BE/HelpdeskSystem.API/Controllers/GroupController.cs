@@ -34,6 +34,13 @@ namespace HelpdeskSystem.API.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [HttpPost("groups/paged")]
+        public async Task<IActionResult> GetGroupsPagedWithPost([FromBody] GetPagedGroupDto dto)
+        {
+            ApiResponse<PagedResponse<GroupDto>> result = await _groupService.GetGroupsPagedAsync(dto.Page, dto.PageSize, dto.Search);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         [HttpPost("groups/create")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> CreateGroup(CreateGroupDto dto)
@@ -74,6 +81,13 @@ namespace HelpdeskSystem.API.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [HttpPost("categories/group/{groupId:int}/paged")]
+        public async Task<IActionResult> GetCategoriesByGroupPagedWithPost([FromBody] GetPagedCategoryDto dto)
+        {
+            ApiResponse<PagedResponse<CategoryDto>> result = await _groupService.GetCategoriesByGroupPagedAsync(dto.GroupId, dto.Page, dto.PageSize, dto.Search);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         [HttpPost("categories/create")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> CreateCategory(CreateCategoryDto dto)
@@ -111,6 +125,13 @@ namespace HelpdeskSystem.API.Controllers
         public async Task<IActionResult> GetSubCategoriesByCategoryPaged(int categoryId, [FromQuery] int page = 1, [FromQuery] int pageSize = 5, [FromQuery] string? search = null)
         {
             ApiResponse<PagedResponse<SubCategoryDto>> result = await _groupService.GetSubCategoriesByCategoryPagedAsync(categoryId, page, pageSize, search);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("subcategories/category/{categoryId:int}/paged")]
+        public async Task<IActionResult> GetSubCategoriesByCategoryPagedWithPost([FromBody] GetPagedSubCategoryDto dto)
+        {
+            ApiResponse<PagedResponse<SubCategoryDto>> result = await _groupService.GetSubCategoriesByCategoryPagedAsync(dto.CategoryId, dto.Page, dto.PageSize, dto.Search);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 

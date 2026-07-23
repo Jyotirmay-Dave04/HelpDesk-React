@@ -82,7 +82,7 @@ public class GroupService : IGroupService
             return ApiResponse<bool>.FailureResponse("Cannot delete category — it has tickets assigned to it.");
 
         foreach (SubCategory subCats in category.SubCategories)
-            await DeleteSubCategoryAsync(subCats.Id);
+            if (!subCats.IsDeleted) _uow.SubCategories.Delete(subCats);
 
         _uow.Categories.Delete(category);
         await _uow.SaveChangesAsync();
@@ -102,7 +102,7 @@ public class GroupService : IGroupService
             return ApiResponse<bool>.FailureResponse("Cannot delete group — it has tickets assigned to it.");
 
         foreach (Category cat in group.Categories)
-            await DeleteCategoryAsync(cat.Id);
+            if (!cat.IsDeleted) _uow.Categories.Delete(cat);
 
         _uow.Groups.Delete(group);
         await _uow.SaveChangesAsync();
@@ -169,7 +169,7 @@ public class GroupService : IGroupService
 
     public async Task<ApiResponse<PagedResponse<GroupDto>>> GetGroupsPagedAsync(int page, int pageSize, string? search)
     {
-        IQueryable<Group> query = _uow.Groups.Query().Where(g => !g.IsDeleted && 
+        IQueryable<Group> query = _uow.Groups.Query().Where(g => !g.IsDeleted &&
             (search == null || EF.Functions.ILike(g.Name, $"%{search}%")));
         (IEnumerable<Group> Items, int TotalCount) = await _uow.Groups.GetPaginatedAsync(query: query, orderBy: o => o.OrderBy(x => x.Name), pageNumber: page, pageSize: pageSize);
 

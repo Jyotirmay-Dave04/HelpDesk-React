@@ -16,16 +16,22 @@ export const NAV_ITEMS: NavItem[] = [
         roles: [UserRole.Admin, UserRole.Agent]
     },
     {
-        label: 'My Tickets',
-        path: '/myTickets',
-        icon: ConfirmationNumber,
-        roles: [UserRole.Admin, UserRole.Agent, UserRole.Requester]
-    },
-    {
         label: 'All Tickets',
         path: '/allTickets',
         icon: ConfirmationNumber,
         roles: [UserRole.Admin]
+    },
+    {
+        label: 'My Queue',
+        path: '/myQueue',
+        icon: Inbox,
+        roles: [UserRole.Agent]
+    },
+    {
+        label: 'My Tickets',
+        path: '/myTickets',
+        icon: ConfirmationNumber,
+        roles: [UserRole.Admin, UserRole.Agent, UserRole.Requester]
     },
     {
         label: 'Users',
@@ -44,12 +50,6 @@ export const NAV_ITEMS: NavItem[] = [
         path: '/slaSettings',
         icon: Schedule,
         roles: [UserRole.Admin]
-    },
-    {
-        label: 'My Queue',
-        path: '/myQueue',
-        icon: Inbox,
-        roles: [UserRole.Agent]
     },
     {
         label: 'Create Ticket',

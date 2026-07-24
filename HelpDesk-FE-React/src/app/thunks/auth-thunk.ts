@@ -1,11 +1,17 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginAsync } from "../../services/auth-service";
-import type { LoginRequest } from "../../interfaces/login";
+import { loginAsync, registerAsync } from "../../services/auth-service";
+import type { LoginRequest, RegisterRequest } from "../../interfaces/login";
 
 export const login = createAsyncThunk(
     'auth/login',
     async (creads: LoginRequest) => {
-        const response = await loginAsync(creads);
-        return response;
+        return await loginAsync(creads);
     }
-)
+);
+
+export const register = createAsyncThunk(
+    'auth/register',
+    async (creads: RegisterRequest) => {
+        return await registerAsync(creads);
+    }
+);

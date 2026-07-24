@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { alpha, Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { DataGrid, type GridColDef, type GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import type { TicketFilter } from "../interfaces/ticket";
@@ -16,18 +16,23 @@ import TicketListToolbar from "../components/ticket-list/TicketListToolbar";
 import TicketFilterPanel from "../components/ticket-list/TicketFilterPanel";
 import type { AgentOption } from "../interfaces/user";
 
-function TicketListPage() {
+interface TicketListProps {
+    myList: boolean;
+}
+
+function TicketListPage({ myList }: TicketListProps) {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [sortModel, setSortModel] = useState<GridSortModel>([]);
     const [filter, setFilter] = useState<TicketFilter>();
     const [selectedAgent, setSelectedAgent] = useState<AgentOption | null>(null);
     const [searchInput, setSearchInput] = useState('');
     const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+    const [showRefreshNeeded, setShowRefreshNeeded] = useState(false);
     const debouncedSearch = useDebouncedValue(searchInput, 400);
 
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.auth);
-    const { tickets, ticketCount, loading } = useAppSelector(state => state.ticket);
+    const { tickets, ticketCount, loading, newTickets, updatedTickets } = useAppSelector(state => state.ticket);
     const navigate = useNavigate();
     const { confirm, ConfirmDialogUI } = useConfirm();
 
@@ -39,20 +44,39 @@ function TicketListPage() {
                 pageSize: paginationModel.pageSize,
                 sortBy: sortModel[0]?.field,
                 sortDirection: sortModel[0]?.sort,
+                isMyList: myList
             }));
         } catch (err) {
             toast.error(err);
         }
-    }, [filter, paginationModel, sortModel]);
+    }, [filter, paginationModel, sortModel, myList]);
 
     useEffect(() => {
         setFilter((prev) => ({ ...prev, search: debouncedSearch || undefined, page: 1 }));
     }, [debouncedSearch]);
 
+    // SignalR - create + update ticket
+    useEffect(() => {
+        if (newTickets !== null || updatedTickets !== null) {
+            if (isFilterApplied()) {
+                setShowRefreshNeeded(true);
+            } else {
+                refreshTickets();
+            }
+        }
+        return () => {
+            setShowRefreshNeeded(false);
+        }
+    }, [newTickets, updatedTickets]);
+
     const ticketListColumns: GridColDef[] = getColumnsBasedOnRole();
 
     function canEdit(status: TicketStatus) {
         return status === TicketStatus.Open || status === TicketStatus.Assigned;
+    }
+
+    function isFilterApplied() {
+        return searchInput != '' || activeFilterCount > 0 || paginationModel.page != 0 || sortModel[0]?.field != '';
     }
 
     function getColumnsBasedOnRole(): GridColDef[] {
@@ -185,6 +209,7 @@ function TicketListPage() {
                 pageSize: paginationModel.pageSize,
                 sortBy: sortModel[0]?.field,
                 sortDirection: sortModel[0]?.sort,
+                isMyList: myList
             }));
         } catch (err) {
             toast.error(err);
@@ -200,14 +225,22 @@ function TicketListPage() {
         if (filter?.groupId) count++;
         if (filter?.categoryId) count++;
         if (filter?.assignedTo) count++;
-        if (filter?.breached) count++;
+        if (filter?.breached !== undefined) count++;
         if (filter?.dateFrom || filter?.dateTo) count++;
         return count;
     }
 
+    function refreshTickets() {
+        setSearchInput('');
+        setFilter({});
+        setPaginationModel(prev => ({ ...prev, page: 0 }));
+        setSortModel([]);
+        setShowRefreshNeeded(false);
+    }
+
     return (
         <>
-            <Box sx={{ maxWidth: '100%'}}>
+            <Box sx={{ maxWidth: '100%' }}>
                 <Stack direction='row' sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="h5" sx={{ my: 2 }}>Tickets</Typography>
                     <Box>
@@ -221,6 +254,14 @@ function TicketListPage() {
                     activeFilterCount={activeFilterCount}
                     onOpenFilterPanel={() => setFilterPanelOpen(true)}
                 />
+
+                {showRefreshNeeded && (
+                    <Button variant='outlined'
+                        sx={(theme) => ({ bgcolor: alpha(theme.palette.primary.light, 0.30) })}
+                        onClick={() => refreshTickets()}>
+                        Refresh needed - You have {newTickets && 'new'} {updatedTickets && 'updated'} tickets
+                    </Button>
+                )}
 
                 <DataGrid
                     pagination

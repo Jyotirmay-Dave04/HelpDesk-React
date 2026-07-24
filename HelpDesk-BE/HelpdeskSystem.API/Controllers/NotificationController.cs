@@ -28,6 +28,14 @@ namespace HelpdeskSystem.API.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetMyNotificationsWithPost([FromBody] NotificationRequestFilterDto filterDto)
+        {
+            int userId = _currentUser.GetUserId();
+            ApiResponse<PagedResponse<NotificationResponseDto>> result = await _notificationService.GetUserNotificationsAsync(userId, filterDto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         [HttpGet("unreadCount")]
         public async Task<IActionResult> GetUnreadCount()
         {

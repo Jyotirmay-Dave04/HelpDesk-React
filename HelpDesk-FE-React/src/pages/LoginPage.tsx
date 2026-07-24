@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Alert, Box, Button, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, IconButton, InputAdornment, Link, Stack, TextField, Typography } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "../utils/Toast";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
@@ -43,8 +43,8 @@ export default function LoginForm() {
 
     return (
         <>
-            <Box component="form" onSubmit={formik.handleSubmit} sx={{ maxWidth: 400, mx: 'auto', mt: 4 }}>
-                <Stack direction="column" spacing={3}>
+            <Box component="form" onSubmit={formik.handleSubmit} sx={{ maxWidth: 400, mx: 'auto', mt: 4 }} noValidate>
+                <Stack direction="column" spacing={1}>
                     <Typography variant="h5" sx={{ mb: 1 }}>
                         Login
                     </Typography>
@@ -66,7 +66,7 @@ export default function LoginForm() {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         error={formik.touched.email && !!formik.errors.email}
-                        helperText={formik.touched.email && formik.errors.email}
+                        helperText={(formik.touched.email && formik.errors.email) || ' '}
                     />
 
                     <TextField
@@ -79,7 +79,7 @@ export default function LoginForm() {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         error={formik.touched.password && !!formik.errors.password}
-                        helperText={formik.touched.password && formik.errors.password}
+                        helperText={(formik.touched.password && formik.errors.password) || ' '}
                         slotProps={{
                             input: {
                                 endAdornment: (
@@ -103,6 +103,10 @@ export default function LoginForm() {
                     >
                         Login
                     </Button>
+
+                    <Typography variant='subtitle1' sx={{ justifyContent: 'flex-end'}}>
+                        Don't have account? <Link href='/register'>Create One</Link>
+                    </Typography>
                 </Stack>
             </Box>
         </>

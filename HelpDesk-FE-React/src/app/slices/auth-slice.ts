@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { User } from "../../interfaces/jwt-user";
 import { jwtDecode } from "jwt-decode";
 import type { DecodedToken } from "../../interfaces/decoded-token";
-import { login } from "../thunks/auth-thunk";
+import { login, register } from "../thunks/auth-thunk";
 
 interface AuthState {
     token: string | null;
@@ -68,6 +68,35 @@ export const authSlice = createSlice({
         ),
         builder.addCase(
             login.rejected,
+            (state, action) => {
+                state.token = null;
+                state.user = null;
+                state.isAuthenticated = false;
+                localStorage.removeItem('token');
+                state.error = action.error.message ?? "Something went wrong";
+                state.loading = false;
+            }
+        ),
+        builder.addCase(
+            register.pending,
+            (state) => {
+                state.loading = true;
+            }
+        ),
+        builder.addCase(
+            register.fulfilled,
+            (state, action) => {
+                const newToken = action.payload.data.token;
+                state.token = newToken;
+                localStorage.setItem('token', newToken);
+                state.user = decodeUser(newToken);
+                state.isAuthenticated = true;
+                state.error = null;
+                state.loading = false;
+            }
+        ),
+        builder.addCase(
+            register.rejected,
             (state, action) => {
                 state.token = null;
                 state.user = null;

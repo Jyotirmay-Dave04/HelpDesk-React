@@ -104,7 +104,7 @@ function CreateTicketPage() {
                     : await dispatch(createTicket(values)).unwrap();
 
                 toast.success(response.message);
-                navigate('/dashboard');
+                navigate(-1);
             } catch (err) {
                 toast.error(err);
             }
@@ -260,11 +260,16 @@ function CreateTicketPage() {
                         helperText={formik.touched.serviceDetails && formik.errors.serviceDetails}
                     />
 
-                    <Button loading={formik.isSubmitting} type='submit' variant='contained'
-                        disabled={formik.isSubmitting || (isEditMode && ticketSelector.selectedTicket && formik.values.priority === ticketSelector.selectedTicket.priority
-                            && formik.values.serviceDetails === ticketSelector.selectedTicket.serviceDetails)}>
-                        Submit
-                    </Button>
+                    <Stack direction='row' spacing={3} sx={{ justifyContent: 'flex-end' }}>
+                        <Button type='button' variant='outlined' onClick={() => navigate(-1)}>
+                            Cancel
+                        </Button>
+                        <Button loading={formik.isSubmitting} type='submit' variant='contained'
+                            disabled={formik.isSubmitting || (isEditMode && ticketSelector.selectedTicket && formik.values.priority === ticketSelector.selectedTicket.priority
+                                && formik.values.serviceDetails === ticketSelector.selectedTicket.serviceDetails)}>
+                            Submit
+                        </Button>
+                    </Stack>
                 </Stack>
             </Box>
         </>

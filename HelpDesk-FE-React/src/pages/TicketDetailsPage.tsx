@@ -14,11 +14,13 @@ import { UserRole } from "../types/user-role";
 import type { Comment, CreateCommentPayload } from "../interfaces/comment";
 import { useNavigate, useParams } from "react-router-dom";
 import TicketActionsBar from "../components/ticket-details/TicketActionBar";
+import { useHubConnection } from "../app/provider/SignalRProvider";
 
 const TicketDetailsPage = () => {
     const { ticketId } = useParams();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const connection = useHubConnection();
 
     const [commentLoading, setCommentLoading] = useState(false);
     const [comments, setComments] = useState<Comment[]>([]);
@@ -27,6 +29,7 @@ const TicketDetailsPage = () => {
     const [activities, setActivities] = useState<AuditLog[]>([]);
 
     const currentUser = useAppSelector((state) => state.auth.user);
+    const { updatedTickets } = useAppSelector(state => state.ticket);
     const { loading: ticketLoading, error: ticketError, selectedTicket: ticket } = useAppSelector(state => state.ticket);
 
     useEffect(() => {
@@ -43,6 +46,34 @@ const TicketDetailsPage = () => {
         };
     }, [ticketId, dispatch]);
 
+    useEffect(() => {
+        if (!connection || !ticketId) return;
+
+        connection.invoke('joinTicketGroup', Number(ticketId));
+
+        function handleComment(comment: Comment) {
+            if (comment.authorId != currentUser.id) {
+                if (currentUser.role === UserRole.Requester){
+                    if (!comment.isInternal) setComments(prev => [...prev, comment]);
+                } else {
+                    setComments(prev => [...prev, comment]);
+                }
+            }
+        }
+        connection.on('RecieveComment', handleComment);
+
+        return () => {
+            connection.off('RecieveComment', handleComment);
+            connection.invoke('leaveTicketGroup', Number(ticketId));
+        }
+    }, [connection, ticketId, currentUser]);
+
+    useEffect(() => {
+        if (updatedTickets?.id === Number(ticketId)){
+            dispatch(fetchTicketById(Number(ticketId)));
+            fetchTicketActivity(Number(ticketId));
+        }
+    }, [updatedTickets, ticketId])
 
     async function fetchTicketActivity(ticketId: number) {
         setActivityLoading(true);

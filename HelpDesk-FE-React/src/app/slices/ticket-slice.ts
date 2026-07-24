@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { TicketListItem, TicketResponse } from "../../interfaces/ticket";
 import { createTicket, deleteTicket, fetchTicketById, fetchTickets, updateTicket } from "../thunks/ticket-thunk";
 
@@ -6,6 +6,8 @@ interface TicketState {
     tickets: TicketListItem[];
     ticketCount: number;
     selectedTicket: TicketResponse | null;
+    newTickets: TicketResponse | null;
+    updatedTickets: TicketResponse | null;
     loading: boolean;
     fetchMessage: string | null;
     createMessage: string | null;
@@ -19,6 +21,8 @@ const initialState: TicketState = {
     ticketCount: 0,
     selectedTicket: null,
     loading: false,
+    newTickets: null,
+    updatedTickets: null,
     fetchMessage: null,
     createMessage: null,
     updateMessage: null,
@@ -32,6 +36,12 @@ export const ticketSlice = createSlice({
     reducers: {
         clearCreateMessage: (state) => { state.createMessage = null; },
         clearSelectedTicket: (state) => { state.selectedTicket = null; },
+        ticketCreatedRealTime: (state, action: PayloadAction<TicketResponse>) => {
+            state.newTickets = action.payload;
+        },
+        ticketUpdatedRealTime: (state, action: PayloadAction<TicketResponse>) => {
+            state.updatedTickets = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -46,6 +56,8 @@ export const ticketSlice = createSlice({
                 state.ticketCount = action.payload.data.totalCount;
                 state.fetchMessage = action.payload.message;
                 state.loading = false;
+                state.newTickets = null;
+                state.updatedTickets = null;
             })
             .addCase(fetchTickets.rejected, (state, action) => {
                 state.error = action.payload.toString() ?? "Something went wrong";
@@ -96,7 +108,7 @@ export const ticketSlice = createSlice({
                 state.error = action.payload.toString() ?? "Something went wrong";
                 state.loading = false;
             })
-            
+
             .addCase(deleteTicket.pending, (state) => {
                 state.error = null;
                 state.deleteMessage = null;
@@ -113,6 +125,11 @@ export const ticketSlice = createSlice({
     },
 });
 
-export const { clearCreateMessage, clearSelectedTicket } = ticketSlice.actions;
+export const {
+    clearCreateMessage,
+    clearSelectedTicket,
+    ticketCreatedRealTime,
+    ticketUpdatedRealTime
+} = ticketSlice.actions;
 
 export default ticketSlice.reducer;

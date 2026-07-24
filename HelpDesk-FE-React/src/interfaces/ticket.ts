@@ -64,8 +64,9 @@ export interface TicketFilter {
     dateTo?: string;
     sortBy?: string;
     sortDirection?: 'asc' | 'desc';
-    page: number;
-    pageSize: number;
+    isMyList?: boolean;
+    page?: number;
+    pageSize?: number;
 }
 
 export interface UpdateTicketPayload {

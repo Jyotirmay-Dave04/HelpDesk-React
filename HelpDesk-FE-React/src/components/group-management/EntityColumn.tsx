@@ -38,7 +38,7 @@ function EntityColumn<T extends ColumnEntity>({
     onDelete,
 }: EntityColumnProps<T>) {
     return (
-        <Paper variant="outlined" sx={{ flex: 1, minWidth: 280, display: "flex", flexDirection: "column", height: "70vh" }}>
+        <Paper variant="outlined" sx={{ flex: 1, minWidth: 280, display: "flex", flexDirection: "column", height: 600 }}>
             <Stack direction="row" sx={{ px: 2, py: 1.5, borderBottom: "1px solid", borderColor: "divider", alignItems: "center", justifyContent: "space-between" }}>
                 <Typography variant="subtitle1" sx={{fontWeight: 600}}>{title}</Typography>
                 <Tooltip title={disabled ? (disabledMessage ?? "") : `Add ${title.replace(/s$/, "")}`}>
@@ -78,7 +78,7 @@ function EntityColumn<T extends ColumnEntity>({
                                 <ListItemText primary={item.name} />
                                 <Stack direction="row" onClick={(e) => e.stopPropagation()}>
                                     <Tooltip title="Edit">
-                                        <IconButton size="small" onClick={() => onEdit(item)}>
+                                        <IconButton size="small" color='primary' onClick={() => onEdit(item)}>
                                             <Edit fontSize="small" />
                                         </IconButton>
                                     </Tooltip>

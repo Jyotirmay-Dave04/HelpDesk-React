@@ -13,6 +13,7 @@ import UserManagementPage from "./pages/UserManagementPage";
 import AppLayout from "./layouts/AppLayout";
 import GroupManagementPage from "./pages/GroupManagementPage";
 import SlaSettingsPage from "./pages/SlaSettingsPage";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   return (
@@ -23,20 +24,27 @@ function App() {
         <Route path='/login' element={
           <LoggedRoute><LoginForm /></LoggedRoute>
         }></Route>
+        <Route path='/register' element={
+          <LoggedRoute><RegisterPage /></LoggedRoute>
+        } />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-            <Route path='/dashboard' element={<TicketListPage />} />
-            <Route path='/myTickets' element={<TicketListPage />} />
-            <Route path='/allTickets' element={<TicketListPage />} />
+            <Route path='/dashboard' element={<TicketListPage myList={false} />} />
+            <Route path='/myTickets' element={<TicketListPage myList={true} />} />
             <Route path='/ticket/create' element={<CreateTicketPage />} />
             <Route path='/ticket/edit/:id' element={<CreateTicketPage />} />
             <Route path='/ticket/:ticketId' element={<TicketDetailsPage />} />
 
             <Route element={<RoleProtectedRoute allowedRoles={[UserRole.Admin]}><Outlet /></RoleProtectedRoute>}>
+              <Route path='/allTickets' element={<TicketListPage myList={false} />} />
               <Route path='/userManagement' element={<UserManagementPage />} />
               <Route path='/groupManagement' element={<GroupManagementPage />} />
               <Route path='/slaSettings' element={<SlaSettingsPage />} />
+            </Route>
+
+            <Route element={<RoleProtectedRoute allowedRoles={[UserRole.Agent]}><Outlet /></RoleProtectedRoute>}>
+              <Route path='/myQueue' element={<TicketListPage myList={false} />} />
             </Route>
           </Route>
         </Route>

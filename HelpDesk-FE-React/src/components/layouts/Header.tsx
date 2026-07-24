@@ -1,9 +1,10 @@
 import { useAppDispatch, useAppSelector } from "../../app/hooks/hooks";
 import { useState } from "react";
 import { logout } from "../../app/slices/auth-slice";
-import { AppBar, Avatar, Box, Divider, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Divider, IconButton, Menu, MenuItem, Stack, Toolbar, Typography } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import NotificationBell from "../header/NotificationBell";
 
 interface HeaderProps {
     onMenuClick: () => void;
@@ -32,14 +33,17 @@ function Header({ onMenuClick }: HeaderProps) {
                     HelpDesk
                 </Typography>
                 <Box>
-                    <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
-                        <Avatar sx={{ width: 32, height: 32, bgcolor: "secondary.main" }}>{initials}</Avatar>
-                    </IconButton>
-                    <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
-                        <MenuItem disabled>{user?.name}</MenuItem>
-                        <Divider />
-                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                    </Menu>
+                    <Stack direction='row' spacing={3}>
+                        <NotificationBell />
+                        <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: "secondary.main" }}>{initials}</Avatar>
+                        </IconButton>
+                        <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
+                            <MenuItem disabled>{user?.name}</MenuItem>
+                            <Divider />
+                            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                        </Menu>
+                    </Stack>
                 </Box>
             </Toolbar>
         </AppBar>
